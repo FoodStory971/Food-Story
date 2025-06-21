@@ -5,20 +5,12 @@
       "periode": "Du dimanche 15 au jeudi 19 juin",
       "plats": [
         {
-          "id": 2,
-          "nom": "Poulet Jerk",
-          "emoji": "🔥",
-          "description": "Poulet mariné aux épices jamaïcaines, grillé à la perfection avec notre mélange secret",
-          "prix": "15,90 €",
-          "ordre": 1
-        },
-        {
           "nom": "Fricassé de Chatrou",
           "emoji": "🐙",
           "description": "Poulpe mijoté aux épices créoles, tomates et oignons, recette traditionnelle antillaise",
           "prix": "16,50 €",
           "id": 1,
-          "ordre": 2
+          "ordre": 1
         },
         {
           "nom": "Boulets Liégeois",
@@ -26,7 +18,7 @@
           "description": "Boulettes de viande belges traditionnelles, sauce lapin et frites maison",
           "prix": "14,80 €",
           "id": 28,
-          "ordre": 3
+          "ordre": 2
         },
         {
           "id": 13,
@@ -34,7 +26,7 @@
           "emoji": "🥛",
           "description": "Veau tendre en sauce blanche crémeuse, carottes et champignons de Paris",
           "prix": "18,90 €",
-          "ordre": 4
+          "ordre": 3
         }
       ]
     },
@@ -73,6 +65,14 @@
           "description": "Boulettes de viande belges traditionnelles, sauce lapin et frites maison",
           "prix": "14,80 €",
           "ordre": 4
+        },
+        {
+          "id": 2,
+          "nom": "Poulet Jerk",
+          "emoji": "🔥",
+          "description": "Poulet mariné aux épices jamaïcaines, grillé à la perfection avec notre mélange secret",
+          "prix": "15,90 €",
+          "ordre": 5
         }
       ]
     },

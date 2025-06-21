@@ -12,6 +12,8 @@ let dataService;
 let adminRenderer;
 let modalEnhancements;
 let isAuthenticated = false;
+let donneesMenus = null;
+let modalActuel = null;
 
 // Mot de passe d'administration (codé en dur pour micro sécurité)
 const MOT_DE_PASSE_ADMIN = 'Lucien971';
@@ -587,5 +589,88 @@ async function ajouterNouvelAccompagnement(donnees) {
         console.error('Erreur lors de l\'ajout:', error);
         afficherMessage('Erreur lors de l\'ajout de l\'accompagnement', 'error');
         return false;
+    }
+}
+
+/**
+ * Fonction de diagnostic pour tester la communication avec l'API
+ */
+async function diagnostiquerAPI() {
+    console.log('🔍 Début du diagnostic API...');
+    
+    try {
+        // Test de la route de statut
+        console.log('📡 Test de la route /api/status...');
+        const responseStatus = await fetch('/api/status');
+        const statusData = await responseStatus.json();
+        console.log('✅ Status API:', statusData);
+        
+        // Test de la route des menus
+        console.log('📡 Test de la route /api/menus...');
+        const responseMenus = await fetch('/api/menus');
+        const menusData = await responseMenus.json();
+        console.log('✅ Données menus:', menusData);
+        
+        // Afficher un résumé du diagnostic
+        const diagnostic = {
+            apiStatus: responseStatus.ok,
+            menusStatus: responseMenus.ok,
+            environment: statusData.environment,
+            memoryData: statusData.memoryDataExists,
+            fileExists: statusData.fileExists,
+            timestamp: new Date().toISOString()
+        };
+        
+        console.log('📊 Résumé diagnostic:', diagnostic);
+        
+        // Afficher dans l'interface si possible
+        if (typeof afficherMessage === 'function') {
+            const message = `Diagnostic API - Status: ${diagnostic.apiStatus ? '✅' : '❌'} | Menus: ${diagnostic.menusStatus ? '✅' : '❌'} | Env: ${diagnostic.environment}`;
+            afficherMessage(message, diagnostic.apiStatus && diagnostic.menusStatus ? 'success' : 'error');
+        }
+        
+        return diagnostic;
+        
+    } catch (error) {
+        console.error('❌ Erreur lors du diagnostic:', error);
+        
+        if (typeof afficherMessage === 'function') {
+            afficherMessage(`Erreur de diagnostic: ${error.message}`, 'error');
+        }
+        
+        return {
+            apiStatus: false,
+            error: error.message,
+            timestamp: new Date().toISOString()
+        };
+    }
+}
+
+/**
+ * Fonction améliorée pour charger les données avec diagnostic
+ */
+async function chargerDonnees() {
+    try {
+        console.log('📥 Chargement des données...');
+        
+        // Diagnostic préliminaire
+        await diagnostiquerAPI();
+        
+        const response = await fetch('/api/menus');
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Erreur réseau' }));
+            throw new Error(`Erreur ${response.status}: ${errorData.error || errorData.details || 'Erreur inconnue'}`);
+        }
+        
+        donneesMenus = await response.json();
+        console.log('✅ Données chargées avec succès:', donneesMenus);
+        
+        // Afficher l'interface
+        afficherInterface();
+        
+    } catch (error) {
+        console.error('❌ Erreur lors du chargement des données:', error);
+        afficherErreur(`Erreur de chargement: ${error.message}`);
     }
 } 

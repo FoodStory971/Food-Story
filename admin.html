@@ -48,6 +48,17 @@
             <p class="subtitle">Gestion des menus et contenus</p>
         </div>
 
+        <!-- Boutons de diagnostic -->
+        <div class="diagnostic-section" style="margin-bottom: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+            <div style="margin-bottom: 0.5rem; font-weight: bold; color: #007bff;">🔧 Outils de diagnostic</div>
+            <button onclick="diagnostiquerAPI()" class="btn btn-secondary" style="margin-right: 1rem; font-size: 0.9rem;">
+                🔍 Diagnostic API
+            </button>
+            <button onclick="chargerDonnees()" class="btn btn-primary" style="font-size: 0.9rem;">
+                🔄 Recharger les données
+            </button>
+        </div>
+
         <div id="message-container"></div>
 
         <!-- Aperçu discret des accompagnements actifs -->

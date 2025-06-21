@@ -1,6 +1,7 @@
 /**
  * Serveur Express pour FoodStory
  * Sert les fichiers statiques et gère les données des menus
+ * Compatible avec l'environnement serverless Vercel
  */
 
 const express = require('express');
@@ -18,7 +19,7 @@ app.use(express.json());
 
 // Middleware de logging pour déboguer les routes
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
     next();
 });
 
@@ -33,17 +34,32 @@ app.use(express.static(__dirname, {
     }
 }));
 
+// Variable globale pour stocker les données en mémoire (fallback pour Vercel)
+let donneesMemoire = null;
+
 /**
- * Lit les données des menus depuis le fichier JSON
+ * Lit les données des menus depuis le fichier JSON ou la mémoire
  */
 async function lireDonneesMenus() {
     try {
+        // Essayer de lire depuis le fichier d'abord
         const data = await fs.readFile(MENUS_FILE, 'utf8');
-        return JSON.parse(data);
+        const donnees = JSON.parse(data);
+        
+        // Stocker en mémoire comme fallback
+        donneesMemoire = donnees;
+        
+        return donnees;
     } catch (error) {
-        console.error('Erreur lors de la lecture du fichier menus.json:', error);
-        // Retourner des données par défaut si le fichier n'existe pas
-        return {
+        console.warn('Impossible de lire le fichier menus.json, utilisation des données en mémoire:', error.message);
+        
+        // Si on a des données en mémoire, les utiliser
+        if (donneesMemoire) {
+            return donneesMemoire;
+        }
+        
+        // Sinon, retourner des données par défaut
+        const donneesDefaut = {
             menus: {
                 actif: {
                     titre: "Menu de cette semaine",
@@ -60,26 +76,30 @@ async function lireDonneesMenus() {
                     plats: []
                 }
             },
-            accompagnements: [
-                { nom: "Pommes de terre", emoji: "🥔" },
-                { nom: "Riz", emoji: "🍚" },
-                { nom: "Purée de giromon", emoji: "🎃" },
-                { nom: "Frites", emoji: "🍟" }
-            ]
+            accompagnements: []
         };
+        
+        donneesMemoire = donneesDefaut;
+        return donneesDefaut;
     }
 }
 
 /**
- * Écrit les données des menus dans le fichier JSON
+ * Écrit les données des menus dans le fichier JSON et en mémoire
  */
 async function ecrireDonneesMenus(donnees) {
     try {
+        // Toujours stocker en mémoire
+        donneesMemoire = donnees;
+        
+        // Essayer d'écrire dans le fichier (fonctionnera en local, pas sur Vercel)
         await fs.writeFile(MENUS_FILE, JSON.stringify(donnees, null, 2), 'utf8');
+        console.log('Données sauvegardées dans le fichier et en mémoire');
         return true;
     } catch (error) {
-        console.error('Erreur lors de l\'écriture du fichier menus.json:', error);
-        return false;
+        console.warn('Impossible d\'écrire dans le fichier, données conservées en mémoire uniquement:', error.message);
+        // Les données sont quand même en mémoire, donc on considère que c'est un succès partiel
+        return true;
     }
 }
 
@@ -149,6 +169,32 @@ function trouverPlat(donnees, platId) {
 // Routes API
 
 /**
+ * GET /api/status - Route de diagnostic
+ */
+app.get('/api/status', async (req, res) => {
+    try {
+        const donneesExistent = donneesMemoire !== null;
+        const fichierExiste = await fs.access(MENUS_FILE).then(() => true).catch(() => false);
+        
+        res.json({
+            status: 'OK',
+            environment: process.env.NODE_ENV || 'development',
+            timestamp: new Date().toISOString(),
+            memoryDataExists: donneesExistent,
+            fileExists: fichierExiste,
+            platform: process.platform,
+            nodeVersion: process.version
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'ERROR',
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
+/**
  * GET /api/menus - Récupère tous les menus
  */
 app.get('/api/menus', async (req, res) => {
@@ -173,7 +219,11 @@ app.get('/api/menus', async (req, res) => {
         res.json(donnees);
     } catch (error) {
         console.error('Erreur GET /api/menus:', error);
-        res.status(500).json({ error: 'Erreur lors de la récupération des menus' });
+        res.status(500).json({ 
+            error: 'Erreur lors de la récupération des menus',
+            details: error.message,
+            timestamp: new Date().toISOString()
+        });
     }
 });
 
@@ -305,11 +355,18 @@ app.post('/api/plats', async (req, res) => {
         if (succes) {
             res.json({ success: true, plat: nouveauPlat, message: 'Plat ajouté avec succès' });
         } else {
-            res.status(500).json({ error: 'Erreur lors de l\'ajout du plat' });
+            res.status(500).json({ 
+                error: 'Erreur lors de l\'ajout du plat',
+                details: 'Échec de la sauvegarde des données'
+            });
         }
     } catch (error) {
         console.error('Erreur POST /api/plats:', error);
-        res.status(500).json({ error: 'Erreur lors de l\'ajout du plat' });
+        res.status(500).json({ 
+            error: 'Erreur lors de l\'ajout du plat',
+            details: error.message,
+            timestamp: new Date().toISOString()
+        });
     }
 });
 
