@@ -11,9 +11,132 @@ import { ModalEnhancements } from './modalEnhancements.js';
 let dataService;
 let adminRenderer;
 let modalEnhancements;
+let isAuthenticated = false;
 
-// Initialisation de l'application d'administration
-document.addEventListener('DOMContentLoaded', async () => {
+// Mot de passe d'administration (codé en dur pour micro sécurité)
+const MOT_DE_PASSE_ADMIN = 'Lucien971';
+
+// Initialisation de l'authentification
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM chargé, initialisation authentification...');
+    
+    // Forcer l'affichage du modal d'authentification
+    const modalAuth = document.getElementById('modal-authentification');
+    const contenuAdmin = document.getElementById('contenu-admin');
+    
+    if (modalAuth && contenuAdmin) {
+        // S'assurer que le modal est visible et le contenu masqué
+        modalAuth.style.display = 'flex';
+        modalAuth.classList.remove('hidden');
+        contenuAdmin.style.display = 'none';
+        contenuAdmin.classList.remove('authenticated');
+        
+        console.log('Modal d\'authentification affiché');
+    }
+    
+    configurerAuthentification();
+});
+
+/**
+ * Configure le système d'authentification
+ */
+function configurerAuthentification() {
+    const formAuth = document.getElementById('form-authentification');
+    const champMotDePasse = document.getElementById('mot-de-passe');
+    const erreurAuth = document.getElementById('erreur-auth');
+    
+    if (!formAuth || !champMotDePasse) {
+        console.error('Éléments d\'authentification non trouvés');
+        return;
+    }
+
+    // Focus automatique sur le champ mot de passe
+    champMotDePasse.focus();
+
+    // Gestion de la soumission du formulaire
+    formAuth.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const motDePasse = champMotDePasse.value.trim();
+        
+        if (motDePasse === MOT_DE_PASSE_ADMIN) {
+            // Authentification réussie
+            authentificationReussie();
+        } else {
+            // Mot de passe incorrect
+            afficherErreurAuthentification();
+            champMotDePasse.value = '';
+            champMotDePasse.focus();
+        }
+    });
+
+    // Masquer l'erreur quand l'utilisateur commence à taper
+    champMotDePasse.addEventListener('input', () => {
+        if (erreurAuth.style.display !== 'none') {
+            erreurAuth.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * Affiche l'erreur d'authentification
+ */
+function afficherErreurAuthentification() {
+    const erreurAuth = document.getElementById('erreur-auth');
+    if (erreurAuth) {
+        erreurAuth.style.display = 'block';
+        
+        // Animation de secousse
+        erreurAuth.style.animation = 'none';
+        setTimeout(() => {
+            erreurAuth.style.animation = 'shake 0.5s ease-in-out';
+        }, 10);
+    }
+}
+
+/**
+ * Gère l'authentification réussie
+ */
+async function authentificationReussie() {
+    isAuthenticated = true;
+    
+    const modalAuth = document.getElementById('modal-authentification');
+    const contenuAdmin = document.getElementById('contenu-admin');
+    
+    console.log('Authentification réussie');
+    console.log('Modal auth trouvé:', !!modalAuth);
+    console.log('Contenu admin trouvé:', !!contenuAdmin);
+    
+    if (modalAuth && contenuAdmin) {
+        console.log('Masquage du modal et affichage du contenu...');
+        
+        // Masquer le modal avec la classe CSS
+        modalAuth.classList.add('hidden');
+        
+        // Afficher le contenu admin
+        contenuAdmin.style.display = 'block';
+        contenuAdmin.style.opacity = '1';
+        contenuAdmin.classList.add('authenticated');
+        
+        console.log('Contenu admin affiché, initialisation...');
+        
+        // Initialiser l'application
+        try {
+            await initialiserApplicationAdmin();
+            console.log('Application initialisée avec succès');
+        } catch (error) {
+            console.error('Erreur lors de l\'initialisation:', error);
+            afficherMessage('Erreur lors du chargement de l\'interface', 'error');
+        }
+    } else {
+        console.error('Éléments non trouvés - Modal:', !!modalAuth, 'Contenu:', !!contenuAdmin);
+    }
+}
+
+/**
+ * Initialisation de l'application d'administration (après authentification)
+ */
+async function initialiserApplicationAdmin() {
     try {
         // Initialiser les services
         dataService = new DataService();
@@ -70,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Erreur lors de l\'initialisation:', error);
         afficherMessage('Erreur lors du chargement de l\'interface d\'administration', 'error');
     }
-});
+}
 
 // === FONCTIONS UTILITAIRES ===
 
@@ -113,13 +236,32 @@ function afficherMessage(message, type = 'info') {
 // === FONCTIONS GLOBALES POUR LES PLATS ===
 
 /**
+ * Vérifie si l'utilisateur est authentifié
+ * @returns {boolean} État d'authentification
+ */
+function verifierAuthentification() {
+    if (!isAuthenticated) {
+        console.error('Tentative d\'accès non authentifié');
+        afficherMessage('Vous devez être authentifié pour effectuer cette action', 'error');
+        return false;
+    }
+    return true;
+}
+
+/**
  * Ouvre le modal pour ajouter un plat
  * @param {string} categorie - Catégorie du menu
  */
 window.ouvrirModal = function(categorie) {
-    adminRenderer.ouvrirModalAjout(categorie);
-    modalEnhancements.configurerSuggestionsEmojis('emoji', 'emoji-suggestions');
-    modalEnhancements.configurerFormatagePrix('prix');
+    if (!verifierAuthentification()) return;
+    
+    try {
+        adminRenderer.ouvrirModalAjout(categorie);
+        modalEnhancements.configurerSuggestionsEmojis('emoji', 'emoji-suggestions', 'plats');
+    } catch (error) {
+        console.error('Erreur lors de l\'ouverture du modal:', error);
+        afficherMessage('Erreur lors de l\'ouverture du modal d\'ajout', 'error');
+    }
 };
 
 /**
@@ -128,6 +270,8 @@ window.ouvrirModal = function(categorie) {
  * @param {string} categorie - Catégorie du plat
  */
 window.modifierPlat = async function(id, categorie) {
+    if (!verifierAuthentification()) return;
+    
     try {
         const resultat = dataService.trouverPlat(id);
         if (!resultat) {
@@ -136,8 +280,7 @@ window.modifierPlat = async function(id, categorie) {
         }
 
         adminRenderer.ouvrirModalModification(resultat.plat, resultat.categorie);
-        modalEnhancements.configurerSuggestionsEmojis('emoji', 'emoji-suggestions');
-        modalEnhancements.configurerFormatagePrix('prix');
+        modalEnhancements.configurerSuggestionsEmojis('emoji', 'emoji-suggestions', 'plats');
     } catch (error) {
         console.error('Erreur lors de la modification du plat:', error);
         afficherMessage('Erreur lors de la modification du plat', 'error');
@@ -285,6 +428,8 @@ window.descendrePlat = async function(id, categorie) {
  * Ouvre le modal pour ajouter un accompagnement
  */
 window.ouvrirModalAccompagnement = function() {
+    if (!verifierAuthentification()) return;
+    
     adminRenderer.ouvrirModalAccompagnementAjout();
     modalEnhancements.configurerSuggestionsEmojis('accompagnement-emoji', 'accompagnement-emoji-suggestions', 'accompagnements');
 };
@@ -371,15 +516,29 @@ window.supprimerAccompagnement = async function(id) {
  */
 async function ajouterNouveauPlat(donnees) {
     try {
+        // Validation des données
+        if (!donnees.nom || !donnees.prix || !donnees.categorie) {
+            afficherMessage('Veuillez remplir tous les champs obligatoires', 'error');
+            return false;
+        }
+
+        // Nettoyage et validation du prix
+        let prix = donnees.prix.toString().trim();
+        if (!prix.includes('€')) {
+            prix = prix + ' €';
+        }
+
         const plat = {
-            nom: donnees.nom,
-            emoji: donnees.emoji,
-            description: donnees.description,
-            prix: donnees.prix
+            nom: donnees.nom.trim(),
+            emoji: donnees.emoji || '🍽️',
+            description: donnees.description ? donnees.description.trim() : '',
+            prix: prix
         };
 
-        const succes = await dataService.ajouterPlat(donnees.categorie, plat);
-        if (succes) {
+        console.log('Ajout du plat:', plat, 'dans la catégorie:', donnees.categorie);
+
+        const platAjoute = await dataService.ajouterPlat(donnees.categorie, plat);
+        if (platAjoute) {
             afficherMessage('Plat ajouté avec succès', 'success');
             return true;
         } else {
@@ -388,7 +547,7 @@ async function ajouterNouveauPlat(donnees) {
         }
     } catch (error) {
         console.error('Erreur lors de l\'ajout:', error);
-        afficherMessage('Erreur lors de l\'ajout du plat', 'error');
+        afficherMessage(`Erreur lors de l'ajout du plat: ${error.message}`, 'error');
         return false;
     }
 }

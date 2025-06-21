@@ -15,11 +15,39 @@ export const HORAIRES_CONFIG = {
     CRENEAUX: {
         MIDI: {
             DEBUT: 12 * 60, // 12h00 en minutes
-            FIN: 14 * 60 + 30 // 14h30 en minutes
+            FIN: 14 * 60 // 14h00 en minutes
         },
         SOIR: {
             DEBUT: 18 * 60, // 18h00 en minutes
             FIN: 21 * 60 // 21h00 en minutes
+        }
+    },
+    // Horaires spéciaux par jour (0=dimanche, 1=lundi, etc.)
+    HORAIRES_SPECIAUX: {
+        0: { // Dimanche - Soir uniquement
+            CRENEAUX_ACTIFS: ['SOIR'],
+            DEBUT_JOURNEE: 18 * 60, // Considéré ouvert à partir de 18h
+            MESSAGE_MIDI: 'Ouvert ce soir dès 18h'
+        },
+        1: { // Lundi à jeudi - Midi et soir
+            CRENEAUX_ACTIFS: ['MIDI', 'SOIR'],
+            DEBUT_JOURNEE: 10 * 60, // Considéré ouvert à partir de 10h
+            MESSAGE_MIDI: 'Ouvert aujourd\'hui - Appelez !'
+        },
+        2: {
+            CRENEAUX_ACTIFS: ['MIDI', 'SOIR'],
+            DEBUT_JOURNEE: 10 * 60,
+            MESSAGE_MIDI: 'Ouvert aujourd\'hui - Appelez !'
+        },
+        3: {
+            CRENEAUX_ACTIFS: ['MIDI', 'SOIR'],
+            DEBUT_JOURNEE: 10 * 60,
+            MESSAGE_MIDI: 'Ouvert aujourd\'hui - Appelez !'
+        },
+        4: {
+            CRENEAUX_ACTIFS: ['MIDI', 'SOIR'],
+            DEBUT_JOURNEE: 10 * 60,
+            MESSAGE_MIDI: 'Ouvert aujourd\'hui - Appelez !'
         }
     }
 };
@@ -28,7 +56,7 @@ export const HORAIRES_CONFIG = {
 export const DATA_CONFIG = {
     STORAGE_KEY: 'foodstory-menus',
     JSON_FILE: 'menus.json',
-    FALLBACK_PHONE: '01 23 45 67 89',
+    FALLBACK_PHONE: '06 90 85 13 34',
     API_BASE_URL: '/api',
     BACKUP_INTERVAL: 5 * 60 * 1000, // 5 minutes
     MAX_RETRIES: 3
@@ -45,8 +73,9 @@ export const ADMIN_CONFIG = {
 export const MESSAGES = {
     OUVERT: '🟢 Ouvert',
     FERME: '🔴 Fermé',
-    HORAIRES_WEEKEND: 'Ouvert du dimanche au jeudi',
-    HORAIRES_FERME: 'Réouverture à 12h ou 18h',
+    HORAIRES_WEEKEND: 'Dimanche: 18h-21h • Lundi-Jeudi: 12h-14h & 18h-21h',
+    HORAIRES_FERME_DIMANCHE: 'Service: 18h-21h uniquement',
+    HORAIRES_FERME_SEMAINE: 'Service: 12h-14h & 18h-21h',
     ERREUR_CHARGEMENT: 'Erreur lors du chargement des données',
     DONNEES_CHARGEES: 'Données chargées avec succès !',
     PLAT_AJOUTE: 'Plat ajouté avec succès !',

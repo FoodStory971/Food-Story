@@ -7,6 +7,7 @@ import { DataService } from './dataService.js';
 import { BannerService } from './bannerService.js';
 import { MenuRenderer } from './menuRenderer.js';
 import { MESSAGES } from './config.js';
+import { genererHorairesAffichage } from './utils.js';
 
 /**
  * Classe principale de l'application
@@ -25,6 +26,9 @@ class FoodStoryApp {
         try {
             console.log('🚀 Initialisation de FoodStory...');
             
+            // Mettre à jour les horaires dans le DOM
+            this.mettreAJourHoraires();
+            
             // Charger et afficher les données des menus
             await this.chargerEtAfficherMenus();
             
@@ -35,6 +39,30 @@ class FoodStoryApp {
         } catch (error) {
             console.error('❌ Erreur lors de l\'initialisation:', error);
             this.gererErreurInitialisation(error);
+        }
+    }
+
+    /**
+     * Met à jour les horaires dans le DOM à partir de la configuration
+     */
+    mettreAJourHoraires() {
+        const horaires = genererHorairesAffichage();
+        
+        // Mettre à jour les pilules d'horaires dans le header
+        const ligneDetails = document.querySelector('.horaire-ligne-details');
+        if (ligneDetails) {
+            ligneDetails.innerHTML = `
+                <span class="horaire-pilule">${horaires.joursDimanche}</span>
+                <span class="horaire-pilule">${horaires.creneauSoir}</span>
+                <span class="horaire-pilule">${horaires.joursLundiJeudi}</span>
+                <span class="horaire-pilule">${horaires.creneauMidi} & ${horaires.creneauSoir}</span>
+            `;
+        }
+        
+        // Mettre à jour le footer
+        const footer = document.querySelector('.footer p');
+        if (footer) {
+            footer.innerHTML = `<br>🕒 ${horaires.horaireComplet}<br>`;
         }
     }
 

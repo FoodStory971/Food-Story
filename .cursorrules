@@ -4,6 +4,10 @@
 Correction du problème de fichiers statiques (CSS/JS) non chargés sur Vercel
 Erreurs 404 pour tous les assets statiques à cause d'une mauvaise configuration de routing
 
+## Tâche actuelle - MODAL DE MOT DE PASSE ADMIN 🔐
+Ajout d'un modal de mot de passe pour protéger l'accès à la page d'administration
+Mot de passe codé en dur : "Lucien971" pour une micro sécurité
+
 ## Plan d'exécution - TERMINÉ ✅
 [X] Identifier le problème : Configuration vercel.json redirige tout vers server.js
 [X] Modifier vercel.json pour servir les fichiers statiques directement
@@ -11,6 +15,26 @@ Erreurs 404 pour tous les assets statiques à cause d'une mauvaise configuration
 [X] Pousser les modifications sur GitHub
 [X] Vérifier le redéploiement automatique sur Vercel
 [X] Tester le fonctionnement des styles et scripts
+
+## Plan d'exécution - EN COURS 🔄
+[X] Ajouter le modal de mot de passe dans admin.html
+[X] Créer les styles CSS pour le modal d'authentification
+[X] Implémenter la logique JavaScript d'authentification
+[X] Masquer le contenu admin tant que non authentifié
+[X] Ajouter la gestion des erreurs de mot de passe
+[X] Corriger le problème d'affichage après authentification
+[X] Corriger la structure HTML (balises fermantes manquantes)
+[X] Simplifier la logique JavaScript pour éviter les conflits d'animation
+[X] Corriger le masquage du modal avec classe CSS
+[ ] Tester le fonctionnement complet
+
+## Spécifications du modal d'authentification 🔒
+- **Mot de passe** : "Lucien971" (codé en dur)
+- **Affichage** : Modal plein écran au chargement de la page
+- **Sécurité** : Masquage complet du contenu admin avant authentification
+- **UX** : Design cohérent avec le thème Toy Story
+- **Validation** : Vérification côté client uniquement
+- **Persistance** : Session temporaire (pas de mémorisation)
 
 ## Problème identifié ❌
 **Cause** : La route `"src": "/(.*)"` dans vercel.json capture TOUS les fichiers, y compris CSS/JS
@@ -25,6 +49,13 @@ Erreurs 404 pour tous les assets statiques à cause d'une mauvaise configuration
 [X] **Push GitHub** : Modifications poussées avec succès (sans workflow GitHub Actions)
 [X] **Destination statique** : Ajout de `"dest": "/$1"` pour route des fichiers statiques
 [X] **Builds statiques** : Ajout de @vercel/static pour CSS, JS et fichiers HTML/images
+[X] Amélioration des styles CSS avec !important pour forcer l'affichage
+[X] Ajout d'animations fadeOut pour le modal et fadeIn pour le contenu
+[X] Correction de la logique de transition avec setTimeout
+[X] Ajout de logs de debug pour diagnostiquer les problèmes
+[X] Gestion d'erreurs améliorée avec try/catch
+[X] Correction de la structure HTML (balises div fermantes)
+[X] Simplification de la logique d'authentification pour éviter les problèmes d'animation
 
 ## Configuration vercel.json corrigée ✅
 ```json
@@ -164,7 +195,32 @@ Derniers ajustements pour améliorer l'expérience utilisateur :
 Ajout de 10 plats en sauce dans la section archives pour enrichir l'historique des menus
 Création de plats variés avec sauces créoles, françaises et internationales
 
-## Tâche actuelle - OPTIMISATION GRILLE ARCHIVES GRAND ÉCRAN ✅
+## Tâche actuelle - BANNIÈRE DIMANCHE SOIR UNIQUEMENT 🕐
+Modification du système de bannière pour gérer le cas spécial du dimanche
+Le dimanche, ouverture uniquement le soir (18h-21h) et pas le midi (12h-14h)
+
+## Plan d'exécution - TERMINÉ ✅
+[X] Modifier HORAIRES_CONFIG pour distinguer les jours avec horaires spéciaux
+[X] Adapter la fonction verifierStatutOuverture() pour le dimanche
+[X] Mettre à jour la génération des horaires d'affichage
+[X] Ajuster les messages de la bannière selon le jour
+[X] Créer des messages spécifiques pour dimanche vs lundi-jeudi
+[X] Adapter l'affichage des pilules d'horaires dans le header
+
+## Plan d'exécution - TERMINÉ ✅
+[X] Identifier les horaires codés en dur dans index.html (header et footer)
+[X] Corriger la configuration HORAIRES_CONFIG (14h00 au lieu de 14h30)
+[X] Créer la fonction genererHorairesAffichage() dans utils.js
+[X] Ajouter la méthode mettreAJourHoraires() dans main.js
+[X] Mettre à jour dynamiquement les pilules d'horaires du header
+[X] Mettre à jour dynamiquement le texte du footer
+[X] Tester l'affichage avec les horaires de la configuration
+  
+  ## Tâche précédente - AFFICHAGE TÉLÉPHONE QUAND FERMÉ ✅
+Modification de la bannière pour toujours afficher le numéro de téléphone même quand fermé, mais plus petit
+Le numéro reste visible pour les clients avec message d'horaires en dessous
+
+## Tâche précédente - OPTIMISATION GRILLE ARCHIVES GRAND ÉCRAN ✅
 Optimisation de l'affichage de la grille des archives sur grand écran pour une meilleure utilisation de l'espace
 Amélioration de la lisibilité et de l'organisation des plats archivés
 
@@ -805,11 +861,15 @@ js/
 - Améliorer les contrastes de couleurs
 
 ## Corrections apportées ✅
-[X] Correction de la méthode trouverAccompagnement pour chercher dans menusData.accompagnements
-[X] Correction de la méthode trouverPlat pour gérer les comparaisons string/number avec ==
-[X] Amélioration des styles CSS des pilules et boutons pour une meilleure UX
-[X] Augmentation des tailles et amélioration de la lisibilité
-[X] Test des fonctionnalités CRUD des accompagnements et plats
+[X] Amélioration des styles CSS avec !important pour forcer l'affichage
+[X] Ajout d'animations fadeOut pour le modal et fadeIn pour le contenu
+[X] Correction de la logique de transition avec setTimeout
+[X] Ajout de logs de debug pour diagnostiquer les problèmes
+[X] Gestion d'erreurs améliorée avec try/catch
+[X] Correction de la structure HTML (balises div fermantes)
+[X] Simplification de la logique d'authentification pour éviter les problèmes d'animation
+[X] Corriger le masquage du modal avec classe CSS
+[X] Tester le fonctionnement complet
 
 ## Fonctionnalités implémentées - RÉORGANISATION ✅
 

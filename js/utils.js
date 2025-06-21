@@ -75,44 +75,63 @@ export function verifierStatutOuverture() {
     // Vérifier si c'est un jour d'ouverture (dimanche=0 à jeudi=4)
     if (jourActuel < 0 || jourActuel > 4) {
         return {
-            ouvert: false,
+            estOuvert: false,
+            estJourOuvert: false,
             message: "Fermé - Ouvert du dimanche au jeudi",
-            prochaineCreneau: "Dimanche 12h"
+            prochaineCreneau: "Dimanche 18h"
         };
     }
     
-    // Créneaux d'ouverture en minutes depuis minuit
-    const creneauMidi = { debut: 12 * 60, fin: 14 * 60 + 30 }; // 12h-14h30
-    const creneauSoir = { debut: 18 * 60, fin: 21 * 60 }; // 18h-21h
-    
-    // Vérifier si on est dans un créneau d'ouverture
-    if ((tempsEnMinutes >= creneauMidi.debut && tempsEnMinutes <= creneauMidi.fin) ||
-        (tempsEnMinutes >= creneauSoir.debut && tempsEnMinutes <= creneauSoir.fin)) {
+    // Récupérer la configuration spéciale pour ce jour
+    const configJour = HORAIRES_CONFIG.HORAIRES_SPECIAUX[jourActuel];
+    if (!configJour) {
         return {
-            ouvert: true,
-            message: "Ouvert - Appelez maintenant !",
+            estOuvert: false,
+            estJourOuvert: true,
+            message: "Configuration manquante pour ce jour",
             prochaineCreneau: null
         };
     }
     
-    // Déterminer le prochain créneau
+    const debutJournee = configJour.DEBUT_JOURNEE;
+    const finJournee = 21 * 60; // 21h00 en minutes
+    
+    // Si c'est un jour d'ouverture et dans la plage horaire
+    if (tempsEnMinutes >= debutJournee && tempsEnMinutes <= finJournee) {
+        return {
+            estOuvert: true,
+            estJourOuvert: true,
+            message: configJour.MESSAGE_MIDI,
+            prochaineCreneau: null
+        };
+    }
+    
+    // Avant l'ouverture ou après 21h
     let prochaineCreneau;
-    if (tempsEnMinutes < creneauMidi.debut) {
-        prochaineCreneau = "Aujourd'hui 12h";
-    } else if (tempsEnMinutes < creneauSoir.debut) {
-        prochaineCreneau = "Aujourd'hui 18h";
-    } else {
-        // Après 21h, prochain créneau demain (ou dimanche si on est jeudi)
-        if (jourActuel === 4) { // Jeudi
-            prochaineCreneau = "Dimanche 12h";
+    let messageHoraires;
+    
+    if (jourActuel === 0) { // Dimanche
+        messageHoraires = "Fermé - Ouvert ce soir 18h-21h";
+        if (tempsEnMinutes < debutJournee) {
+            prochaineCreneau = "Aujourd'hui 18h";
         } else {
-            prochaineCreneau = "Demain 12h";
+            prochaineCreneau = "Lundi 10h";
+        }
+    } else { // Lundi à jeudi
+        messageHoraires = "Fermé - Ouvert 12h-14h & 18h-21h";
+        if (tempsEnMinutes < debutJournee) {
+            prochaineCreneau = "Aujourd'hui 10h";
+        } else if (jourActuel === 4) { // Jeudi
+            prochaineCreneau = "Dimanche 18h";
+        } else {
+            prochaineCreneau = "Demain 10h";
         }
     }
     
     return {
-        ouvert: false,
-        message: "Fermé - Horaires: 12h-14h30 & 18h-21h",
+        estOuvert: false,
+        estJourOuvert: true,
+        message: messageHoraires,
         prochaineCreneau: prochaineCreneau
     };
 }
@@ -328,4 +347,35 @@ export function estObjetVide(obj) {
  */
 export function cloneProfond(obj) {
     return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * Génère l'affichage des horaires à partir de la configuration
+ * @returns {Object} Horaires formatés pour l'affichage
+ */
+export function genererHorairesAffichage() {
+    const creneaux = HORAIRES_CONFIG.CRENEAUX;
+    
+    // Convertir les minutes en format HH:MM
+    const formatHeure = (minutes) => {
+        const heures = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${heures}h${mins > 0 ? mins.toString().padStart(2, '0') : ''}`;
+    };
+    
+    const heureMidiDebut = formatHeure(creneaux.MIDI.DEBUT);
+    const heureMidiFin = formatHeure(creneaux.MIDI.FIN);
+    const heureSoirDebut = formatHeure(creneaux.SOIR.DEBUT);
+    const heureSoirFin = formatHeure(creneaux.SOIR.FIN);
+    
+    return {
+        jours: 'Dimanche - Jeudi',
+        joursDimanche: 'Dimanche',
+        joursLundiJeudi: 'Lundi - Jeudi',
+        creneauMidi: `${heureMidiDebut} - ${heureMidiFin}`,
+        creneauSoir: `${heureSoirDebut} - ${heureSoirFin}`,
+        horaireComplet: `Dimanche : ${heureSoirDebut} - ${heureSoirFin} • Lundi-Jeudi : ${heureMidiDebut} - ${heureMidiFin} & ${heureSoirDebut} - ${heureSoirFin}`,
+        horaireDimanche: `Dimanche : ${heureSoirDebut} - ${heureSoirFin}`,
+        horaireLundiJeudi: `Lundi - Jeudi : ${heureMidiDebut} - ${heureMidiFin} & ${heureSoirDebut} - ${heureSoirFin}`
+    };
 } 

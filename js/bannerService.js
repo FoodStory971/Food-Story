@@ -84,11 +84,25 @@ export class BannerService {
         this.elementsDOM.statusText.textContent = MESSAGES.FERME;
         this.elementsDOM.statusText.style.color = '#FFB6C1';
         
+        // Toujours afficher le numéro de téléphone mais plus petit
         this.elementsDOM.phoneNumber.style.display = 'block';
-        this.elementsDOM.phoneNumber.textContent = estJourOuvert ? 
-            MESSAGES.HORAIRES_FERME : 
-            MESSAGES.HORAIRES_WEEKEND;
-        this.elementsDOM.phoneNumber.style.fontSize = '1.2rem';
+        
+        // Déterminer le message selon le jour et si c'est un jour d'ouverture
+        let messageHoraires;
+        if (!estJourOuvert) {
+            messageHoraires = MESSAGES.HORAIRES_WEEKEND;
+        } else {
+            const aujourdhui = new Date().getDay();
+            messageHoraires = (aujourdhui === 0) ? 
+                MESSAGES.HORAIRES_FERME_DIMANCHE : 
+                MESSAGES.HORAIRES_FERME_SEMAINE;
+        }
+        
+        this.elementsDOM.phoneNumber.innerHTML = `
+            <div style="font-size: 1.2rem; font-weight: 900; margin-bottom: 0.2rem;">${DATA_CONFIG.FALLBACK_PHONE}</div>
+            <div style="font-size: 0.9rem; font-weight: normal; opacity: 0.9;">${messageHoraires}</div>
+        `;
+        this.elementsDOM.phoneNumber.style.fontSize = ''; // Reset font-size car on utilise innerHTML
         this.elementsDOM.phoneNumber.style.animation = 'none';
     }
 

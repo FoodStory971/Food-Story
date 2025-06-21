@@ -12,9 +12,37 @@
     <link rel="stylesheet" href="css/layout.css">
 </head>
 <body>
-    <a href="index.html" class="back-link">← Retour au site</a>
+    <!-- Modal d'authentification -->
+    <div id="modal-authentification" class="modal modal-auth">
+        <div class="modal-content modal-auth-content">
+            <div class="auth-header">
+                <h2>🔐 Accès Administration</h2>
+                <p>Veuillez saisir le mot de passe pour accéder à l'interface d'administration</p>
+            </div>
+            
+            <form id="form-authentification">
+                <div class="form-group">
+                    <label for="mot-de-passe">Mot de passe :</label>
+                    <input type="password" id="mot-de-passe" name="motDePasse" required 
+                           placeholder="Saisissez le mot de passe" autocomplete="current-password">
+                </div>
+                
+                <div id="erreur-auth" class="auth-error" style="display: none;">
+                    ❌ Mot de passe incorrect. Veuillez réessayer.
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-success">🔓 Se connecter</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <div class="container admin">
+    <!-- Contenu principal (masqué par défaut) -->
+    <div id="contenu-admin" class="contenu-admin" style="display: none;">
+        <a href="index.html" class="back-link">← Retour au site</a>
+
+        <div class="container admin">
         <div class="admin-header">
             <h1>🛠️ Administration FoodStory</h1>
             <p class="subtitle">Gestion des menus et contenus</p>
@@ -71,6 +99,7 @@
                     ➕ Ajouter un plat
                 </div>
             </div>
+        </div>
         </div>
     </div>
 
