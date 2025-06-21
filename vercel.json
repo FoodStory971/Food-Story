@@ -8,43 +8,18 @@
       "config": {
         "maxLambdaSize": "50mb"
       }
-    },
-    {
-      "src": "css/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "js/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.{html,png,ico,json}",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server.js",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
-      }
+      "dest": "/server.js"
     },
     {
-      "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico))$",
+      "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico|json))$",
       "dest": "/$1",
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/menus\\.json$",
-      "dest": "/menus.json",
-      "headers": {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache"
       }
     },
     {

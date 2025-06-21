@@ -17,16 +17,20 @@ Mot de passe codé en dur : "Lucien971" pour une micro sécurité
 [X] Tester le fonctionnement des styles et scripts
 
 ## Plan d'exécution - EN COURS 🔄
-[X] Ajouter le modal de mot de passe dans admin.html
-[X] Créer les styles CSS pour le modal d'authentification
-[X] Implémenter la logique JavaScript d'authentification
-[X] Masquer le contenu admin tant que non authentifié
-[X] Ajouter la gestion des erreurs de mot de passe
-[X] Corriger le problème d'affichage après authentification
-[X] Corriger la structure HTML (balises fermantes manquantes)
-[X] Simplifier la logique JavaScript pour éviter les conflits d'animation
-[X] Corriger le masquage du modal avec classe CSS
-[ ] Tester le fonctionnement complet
+[X] Identifier le problème : Routes API spécifiques retournent erreur 500
+[X] Analyser les logs d'erreur du frontend 
+[X] Vérifier la configuration serveur et Vercel
+[X] Tester le serveur en local (fonctionne parfaitement)
+[X] Ajouter logs détaillés dans les routes problématiques
+[X] Pousser les modifications sur GitHub (commit e40eb36)
+[X] Vérifier les logs dans la console DevTools
+[X] Supprimer middleware validation problématique
+[X] Ajouter validation robuste des données dans les routes
+[X] Améliorer gestion d'erreurs avec détails
+[X] Pousser corrections sur GitHub (commit 3e6dbf3)
+[ ] Attendre redéploiement Vercel (2-3 minutes)
+[ ] Tester les routes corrigées en production
+[ ] Valider le fonctionnement complet
 
 ## Spécifications du modal d'authentification 🔒
 - **Mot de passe** : "Lucien971" (codé en dur)
@@ -984,9 +988,12 @@ Les routes API fonctionnent en local mais retournent des erreurs 500 en producti
 [X] Ajouter logs détaillés dans les routes problématiques
 [X] Pousser les modifications sur GitHub (commit e40eb36)
 [X] Vérifier les logs dans la console DevTools
-[ ] Analyser les logs Vercel pour identifier l'erreur exacte
-[ ] Corriger le problème identifié
-[ ] Tester les modifications en production
+[X] Supprimer middleware validation problématique
+[X] Ajouter validation robuste des données dans les routes
+[X] Améliorer gestion d'erreurs avec détails
+[X] Pousser corrections sur GitHub (commit 3e6dbf3)
+[ ] Attendre redéploiement Vercel (2-3 minutes)
+[ ] Tester les routes corrigées en production
 [ ] Valider le fonctionnement complet
 
 ## Problème confirmé ❌

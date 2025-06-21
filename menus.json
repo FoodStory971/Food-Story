@@ -5,19 +5,19 @@
       "periode": "Du dimanche 15 au jeudi 19 juin",
       "plats": [
         {
-          "nom": "Fricassé de Chatrou",
-          "emoji": "🐙",
-          "description": "Poulpe mijoté aux épices créoles, tomates et oignons, recette traditionnelle antillaise",
-          "prix": "16,50 €",
-          "id": 1,
-          "ordre": 1
-        },
-        {
           "nom": "Boulets Liégeois",
           "emoji": "🥩",
           "description": "Boulettes de viande belges traditionnelles, sauce lapin et frites maison",
           "prix": "14,80 €",
           "id": 28,
+          "ordre": 1
+        },
+        {
+          "nom": "Fricassé de Chatrou",
+          "emoji": "🐙",
+          "description": "Poulpe mijoté aux épices créoles, tomates et oignons, recette traditionnelle antillaise",
+          "prix": "16,50 €",
+          "id": 1,
           "ordre": 2
         },
         {

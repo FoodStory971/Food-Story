@@ -36,41 +36,70 @@ app.use(express.static(__dirname, {
     }
 }));
 
+// Middleware pour gérer CORS sur toutes les routes
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+    
+    next();
+});
+
 // Variable globale pour stocker les données en mémoire (fallback pour Vercel)
+// Note: Sur Vercel, cette variable sera réinitialisée à chaque invocation
 let donneesMemoire = null;
 
 /**
- * Lit les données des menus depuis le fichier JSON ou la mémoire
+ * Lit les données des menus depuis la mémoire ou le fichier JSON
+ * Compatible avec l'environnement serverless Vercel
  */
 async function lireDonneesMenus() {
     try {
-        // Essayer de lire depuis le fichier d'abord
-        const data = await fs.readFile(MENUS_FILE, 'utf8');
-        const donnees = JSON.parse(data);
-        
-        // Stocker en mémoire comme fallback
-        donneesMemoire = donnees;
-        
-        return donnees;
-    } catch (error) {
-        console.warn('Impossible de lire le fichier menus.json, utilisation des données en mémoire:', error.message);
-        
-        // Si on a des données en mémoire, les utiliser
+        // Si on a des données en mémoire (modifications de session), les utiliser en priorité
         if (donneesMemoire) {
+            console.log('📖 [LECTURE] Utilisation des données en mémoire (session)');
+            
+            // Mettre à jour les périodes
+            const periodes = calculerPeriodes();
+            donneesMemoire.menus.actif.periode = periodes.actuelle;
+            donneesMemoire.menus.a_venir.periode = periodes.prochaine;
+            
             return donneesMemoire;
         }
         
-        // Sinon, retourner des données par défaut
+        console.log('📖 [LECTURE] Tentative de lecture du fichier menus.json...');
+        
+        // Sinon, lire le fichier JSON statique
+        const data = await fs.readFile(MENUS_FILE, 'utf8');
+        const donnees = JSON.parse(data);
+        
+        console.log('📖 [LECTURE] Fichier lu avec succès');
+        
+        // Ajouter les périodes calculées
+        const periodes = calculerPeriodes();
+        donnees.menus.actif.periode = periodes.actuelle;
+        donnees.menus.a_venir.periode = periodes.prochaine;
+        
+        return donnees;
+    } catch (error) {
+        console.error('📖 [LECTURE] Erreur lors de la lecture du fichier:', error.message);
+        
+        // Retourner des données par défaut avec périodes
+        const periodes = calculerPeriodes();
         const donneesDefaut = {
             menus: {
                 actif: {
                     titre: "Menu de cette semaine",
-                    periode: "",
+                    periode: periodes.actuelle,
                     plats: []
                 },
                 a_venir: {
                     titre: "Aperçu semaine prochaine", 
-                    periode: "",
+                    periode: periodes.prochaine,
                     plats: []
                 },
                 archives: {
@@ -81,13 +110,14 @@ async function lireDonneesMenus() {
             accompagnements: []
         };
         
-        donneesMemoire = donneesDefaut;
+        console.log('📖 [LECTURE] Utilisation des données par défaut');
         return donneesDefaut;
     }
 }
 
 /**
- * Écrit les données des menus dans le fichier JSON et en mémoire
+ * Sauvegarde les données en mémoire pour Vercel (temporaire)
+ * Les données sont perdues à chaque redémarrage sur Vercel
  */
 async function ecrireDonneesMenus(donnees) {
     try {
@@ -99,17 +129,13 @@ async function ecrireDonneesMenus(donnees) {
             return false;
         }
         
-        // Toujours stocker en mémoire d'abord
+        // Stocker en mémoire pour la session en cours
         donneesMemoire = donnees;
-        console.log(`💾 [SAUVEGARDE] Données stockées en mémoire`);
+        console.log(`💾 [SAUVEGARDE] Données stockées en mémoire (session temporaire)`);
         
-        // Essayer d'écrire dans le fichier (fonctionnera en local, pas sur Vercel)
-        try {
-            await fs.writeFile(MENUS_FILE, JSON.stringify(donnees, null, 2), 'utf8');
-            console.log(`💾 [SAUVEGARDE] Données sauvegardées dans le fichier et en mémoire`);
-        } catch (fileError) {
-            console.warn(`💾 [SAUVEGARDE] Impossible d'écrire dans le fichier (normal sur Vercel):`, fileError.message);
-        }
+        // Sur Vercel gratuit, on ne peut pas écrire de fichiers
+        // Les modifications sont temporaires jusqu'au prochain cold start
+        console.warn(`💾 [SAUVEGARDE] ATTENTION: Les modifications sont temporaires sur Vercel`);
         
         return true;
     } catch (error) {
@@ -988,12 +1014,16 @@ app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-// Démarrage du serveur
-app.listen(PORT, () => {
-    console.log(`🚀 Serveur FoodStory démarré sur http://localhost:${PORT}`);
-    console.log(`📋 Page principale: http://localhost:${PORT}`);
-    console.log(`🛠️ Administration: http://localhost:${PORT}/admin.html`);
-});
+// Démarrage du serveur (seulement en local)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Serveur FoodStory démarré sur http://localhost:${PORT}`);
+        console.log(`📋 Page principale: http://localhost:${PORT}`);
+        console.log(`🛠️ Administration: http://localhost:${PORT}/admin.html`);
+    });
+} else {
+    console.log(`🚀 Serveur FoodStory configuré pour Vercel (serverless)`);
+}
 
 // Export pour Vercel
 module.exports = app; 
