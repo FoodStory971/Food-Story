@@ -15,7 +15,7 @@ export const HORAIRES_CONFIG = {
     CRENEAUX: {
         MIDI: {
             DEBUT: 12 * 60, // 12h00 en minutes
-            FIN: 14 * 60, // 14h30 en minutes
+            FIN: 14 * 60, // 14h00 en minutes
         },
         SOIR: {
             DEBUT: 18 * 60, // 18h00 en minutes
@@ -28,7 +28,7 @@ export const HORAIRES_CONFIG = {
 export const DATA_CONFIG = {
     STORAGE_KEY: 'foodstory-menus',
     JSON_FILE: 'menus.json',
-    FALLBACK_PHONE: '01 23 45 67 89',
+    FALLBACK_PHONE: '06 90 85 13 34',
     API_BASE_URL: '/api',
     BACKUP_INTERVAL: 5 * 60 * 1000, // 5 minutes
     MAX_RETRIES: 3
