@@ -1,7 +1,7 @@
 {
   "name": "foodstory",
-  "version": "1.0.0",
-  "description": "Site vitrine FoodStory avec administration",
+  "version": "1.0.1",
+  "description": "Application de gestion de menus pour restaurant",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,7 +12,7 @@
     "cors": "^2.8.5"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.1"
   },
   "keywords": ["restaurant", "menu", "toy-story"],
   "author": "FoodStory",
