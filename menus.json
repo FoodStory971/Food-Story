@@ -27,6 +27,14 @@
           "description": "Veau tendre en sauce blanche crémeuse, carottes et champignons de Paris",
           "prix": "18,90 €",
           "ordre": 3
+        },
+        {
+          "nom": "Test Plat",
+          "emoji": "???",
+          "description": "Test description",
+          "prix": "10,00 ",
+          "id": 29,
+          "ordre": 4
         }
       ]
     },

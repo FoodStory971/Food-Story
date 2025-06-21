@@ -23,6 +23,19 @@ app.use((req, res, next) => {
     next();
 });
 
+// Middleware de validation pour les routes de plats
+app.use('/api/plats/:id/*', (req, res, next) => {
+    const platId = parseInt(req.params.id);
+    if (isNaN(platId) || platId <= 0) {
+        console.error(`❌ [VALIDATION] ID de plat invalide: ${req.params.id}`);
+        return res.status(400).json({
+            success: false,
+            message: 'ID de plat invalide'
+        });
+    }
+    next();
+});
+
 // Configuration des fichiers statiques pour Vercel
 app.use(express.static(__dirname, {
     setHeaders: (res, path) => {
@@ -89,17 +102,30 @@ async function lireDonneesMenus() {
  */
 async function ecrireDonneesMenus(donnees) {
     try {
-        // Toujours stocker en mémoire
+        console.log(`💾 [SAUVEGARDE] Début - Données reçues:`, typeof donnees);
+        
+        // Validation des données
+        if (!donnees || typeof donnees !== 'object') {
+            console.error(`💾 [SAUVEGARDE] Erreur: Données invalides`);
+            return false;
+        }
+        
+        // Toujours stocker en mémoire d'abord
         donneesMemoire = donnees;
+        console.log(`💾 [SAUVEGARDE] Données stockées en mémoire`);
         
         // Essayer d'écrire dans le fichier (fonctionnera en local, pas sur Vercel)
-        await fs.writeFile(MENUS_FILE, JSON.stringify(donnees, null, 2), 'utf8');
-        console.log('Données sauvegardées dans le fichier et en mémoire');
+        try {
+            await fs.writeFile(MENUS_FILE, JSON.stringify(donnees, null, 2), 'utf8');
+            console.log(`💾 [SAUVEGARDE] Données sauvegardées dans le fichier et en mémoire`);
+        } catch (fileError) {
+            console.warn(`💾 [SAUVEGARDE] Impossible d'écrire dans le fichier (normal sur Vercel):`, fileError.message);
+        }
+        
         return true;
     } catch (error) {
-        console.warn('Impossible d\'écrire dans le fichier, données conservées en mémoire uniquement:', error.message);
-        // Les données sont quand même en mémoire, donc on considère que c'est un succès partiel
-        return true;
+        console.error(`💾 [SAUVEGARDE] Erreur critique:`, error);
+        return false;
     }
 }
 
@@ -430,25 +456,35 @@ app.post('/api/plats/:id/archiver', async (req, res) => {
  * POST /api/plats/:id/monter - Monter un plat dans l'ordre d'affichage
  */
 app.post('/api/plats/:id/monter', async (req, res) => {
+    console.log(`🔼 [MONTER] Début - ID: ${req.params.id}, Body:`, req.body);
     try {
         const platId = parseInt(req.params.id);
         const { categorie } = req.body;
+        
+        console.log(`🔼 [MONTER] Parsed - platId: ${platId}, categorie: ${categorie}`);
 
         if (!categorie) {
+            console.log(`🔼 [MONTER] Erreur: Catégorie manquante`);
             return res.status(400).json({ 
                 success: false, 
                 message: 'Catégorie requise' 
             });
         }
 
+        console.log(`🔼 [MONTER] Lecture des données...`);
         const donnees = await lireDonneesMenus();
+        console.log(`🔼 [MONTER] Données chargées, plats dans ${categorie}:`, donnees.menus[categorie]?.plats?.length || 0);
         
         // Trier les plats par ordre avant manipulation
         donnees.menus[categorie].plats.sort((a, b) => (a.ordre || 999) - (b.ordre || 999));
+        console.log(`🔼 [MONTER] Plats triés`);
         
         // Trouver l'index du plat
         const platIndex = donnees.menus[categorie].plats.findIndex(p => p.id === platId);
+        console.log(`🔼 [MONTER] Index trouvé: ${platIndex}`);
+        
         if (platIndex === -1) {
+            console.log(`🔼 [MONTER] Erreur: Plat non trouvé`);
             return res.status(404).json({ 
                 success: false, 
                 message: 'Plat non trouvé' 
@@ -457,6 +493,7 @@ app.post('/api/plats/:id/monter', async (req, res) => {
 
         // Vérifier si le plat peut monter (pas déjà en première position)
         if (platIndex === 0) {
+            console.log(`🔼 [MONTER] Déjà en première position`);
             return res.json({ 
                 success: false, 
                 message: 'Le plat est déjà en première position' 
@@ -468,14 +505,19 @@ app.post('/api/plats/:id/monter', async (req, res) => {
         const ordreActuel = plats[platIndex].ordre;
         const ordrePrecedent = plats[platIndex - 1].ordre;
         
+        console.log(`🔼 [MONTER] Échange ordres: ${ordreActuel} <-> ${ordrePrecedent}`);
+        
         plats[platIndex].ordre = ordrePrecedent;
         plats[platIndex - 1].ordre = ordreActuel;
         
         // Trier à nouveau après modification
         plats.sort((a, b) => (a.ordre || 999) - (b.ordre || 999));
+        console.log(`🔼 [MONTER] Plats retriés après échange`);
 
         // Sauvegarder
+        console.log(`🔼 [MONTER] Sauvegarde...`);
         const succes = await ecrireDonneesMenus(donnees);
+        console.log(`🔼 [MONTER] Sauvegarde: ${succes ? 'succès' : 'échec'}`);
         
         if (succes) {
             res.json({ 
@@ -486,10 +528,11 @@ app.post('/api/plats/:id/monter', async (req, res) => {
             res.status(500).json({ error: 'Erreur lors du déplacement du plat' });
         }
     } catch (error) {
-        console.error('Erreur lors du déplacement du plat:', error);
+        console.error('🔼 [MONTER] Erreur catch:', error);
         res.status(500).json({ 
             success: false, 
-            message: 'Erreur serveur lors du déplacement' 
+            message: 'Erreur serveur lors du déplacement',
+            details: error.message
         });
     }
 });
@@ -498,18 +541,24 @@ app.post('/api/plats/:id/monter', async (req, res) => {
  * POST /api/plats/:id/descendre - Descendre un plat dans l'ordre d'affichage
  */
 app.post('/api/plats/:id/descendre', async (req, res) => {
+    console.log(`🔽 [DESCENDRE] Début - ID: ${req.params.id}, Body:`, req.body);
     try {
         const platId = parseInt(req.params.id);
         const { categorie } = req.body;
+        
+        console.log(`🔽 [DESCENDRE] Parsed - platId: ${platId}, categorie: ${categorie}`);
 
         if (!categorie) {
+            console.log(`🔽 [DESCENDRE] Erreur: Catégorie manquante`);
             return res.status(400).json({ 
                 success: false, 
                 message: 'Catégorie requise' 
             });
         }
 
+        console.log(`🔽 [DESCENDRE] Lecture des données...`);
         const donnees = await lireDonneesMenus();
+        console.log(`🔽 [DESCENDRE] Données chargées, plats dans ${categorie}:`, donnees.menus[categorie]?.plats?.length || 0);
         
         // Trier les plats par ordre avant manipulation
         donnees.menus[categorie].plats.sort((a, b) => (a.ordre || 999) - (b.ordre || 999));
@@ -568,13 +617,26 @@ app.post('/api/plats/:id/descendre', async (req, res) => {
  * IMPORTANT: Cette route doit être définie AVANT /api/plats/:id
  */
 app.post('/api/plats/:id/basculer', async (req, res) => {
-    console.log(`🔄 Basculement du plat ${req.params.id}`);
+    console.log(`🔄 [BASCULER] Début - ID: ${req.params.id}, Body:`, req.body);
     try {
         const platId = parseInt(req.params.id);
         const { categorieSource, categorieDestination } = req.body;
-        const donnees = await lireDonneesMenus();
         
-        console.log(`Basculement: ${categorieSource} → ${categorieDestination} pour le plat ${platId}`);
+        console.log(`🔄 [BASCULER] Parsed - platId: ${platId}, source: ${categorieSource}, dest: ${categorieDestination}`);
+        
+        if (!categorieSource || !categorieDestination) {
+            console.log(`🔄 [BASCULER] Erreur: Paramètres manquants`);
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Catégorie source et destination requises' 
+            });
+        }
+        
+        console.log(`🔄 [BASCULER] Lecture des données...`);
+        const donnees = await lireDonneesMenus();
+        console.log(`🔄 [BASCULER] Données chargées`);
+        
+        console.log(`🔄 [BASCULER] Basculement: ${categorieSource} → ${categorieDestination} pour le plat ${platId}`);
         
         // Trouver le plat dans la catégorie source
         const platIndex = donnees.menus[categorieSource].plats.findIndex(p => p.id === platId);

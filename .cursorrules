@@ -972,64 +972,66 @@ js/
 - **Git status** : `working tree clean` ne garantit pas que tout est sur GitHub
 - **Diagnostic essentiel** : Routes de test indispensables pour déboguer la production
 
-## Tâche actuelle - CORRECTION PROBLÈMES PRODUCTION VERCEL 🔧
-Correction des problèmes de fonctionnement des API sur l'environnement serverless Vercel
-Les fonctionnalités d'ajout et transfert de plats ne fonctionnent pas en production
+## Tâche actuelle - DIAGNOSTIC PROBLÈME VERCEL API 🔧
+Diagnostic et correction du problème de modification des menus sur Vercel
+Les routes API fonctionnent en local mais retournent des erreurs 500 en production
 
 ## Plan d'exécution - EN COURS 🔄
-[X] Identifier le problème : Persistance des données impossible sur serverless
-[X] Créer gestion hybride mémoire + fichier
-[X] Ajouter route de diagnostic /api/status
-[X] Améliorer gestion d'erreurs avec détails
-[X] Ajouter interface de diagnostic dans admin.html
-[X] Pousser les modifications sur GitHub
-[X] Forcer redéploiement Vercel avec version bump
-[ ] Tester la route /api/status après redéploiement
-[ ] Tester l'ajout de plats en production
+[X] Identifier le problème : Routes API spécifiques retournent erreur 500
+[X] Analyser les logs d'erreur du frontend 
+[X] Vérifier la configuration serveur et Vercel
+[X] Tester le serveur en local (fonctionne parfaitement)
+[ ] Identifier la cause spécifique sur Vercel
+[ ] Corriger le problème de compatibilité serverless
+[ ] Tester les modifications en production
 [ ] Valider le fonctionnement complet
 
-## Statut actuel ✅
-- **Modifications locales** : Toutes présentes et fonctionnelles
-- **GitHub** : Push réussi (commit fff4e70)
-- **Vercel** : Redéploiement en cours (forcé par version bump)
-- **Configuration** : vercel.json correcte avec routes API
+## Problème identifié ❌
 
-## Corrections apportées ✅
-[X] **Gestion hybride des données (Fichier + Mémoire)**
-[X] **Variable globale `donneesMemoire`** : Stockage en mémoire comme fallback
-[X] **Fonction `lireDonneesMenus()` améliorée** : Lecture fichier puis mémoire en cas d'échec
-[X] **Fonction `ecrireDonneesMenus()` robuste** : Écriture fichier + mémoire systématique
-[X] **Logs améliorés** : Messages de diagnostic avec timestamps
+### 🐛 **Erreurs API en production Vercel**
+- **Routes affectées** : `/api/plats/:id/basculer`, `/api/plats/:id/monter`, `/api/plats/:id/descendre`
+- **Erreur** : HTTP 500 "Failed to load resource"
+- **Symptômes** : Boutons d'action non fonctionnels en production
+- **Local** : Fonctionne parfaitement (serveur démarre, API répond)
+- **Production** : Erreurs 500 sur routes spécifiques
 
-[X] **Système de diagnostic API**
-[X] **Route `/api/status`** : Endpoint de diagnostic pour vérifier l'état du serveur
-[X] **Fonction `diagnostiquerAPI()`** : Test automatique des routes critiques
-[X] **Boutons de diagnostic** : Interface admin avec outils de test
-[X] **Gestion d'erreurs détaillées** : Messages d'erreur avec détails techniques
+### 🔍 **Analyse technique**
+- **Serveur local** : ✅ Fonctionne (port 3000)
+- **Route `/api/status`** : ✅ Répond correctement 
+- **Route `/api/menus`** : ✅ Lit les données
+- **Route `/api/plats`** : ✅ Ajoute des plats
+- **Routes spécifiques** : ❌ Erreur 500 en production
 
-[X] **Configuration Vercel optimisée**
-[X] **vercel.json amélioré** : Configuration serverless avec headers CORS
-[X] **Taille Lambda augmentée** : `maxLambdaSize: "50mb"` pour éviter les limitations
-[X] **Timeout augmenté** : `maxDuration: 30` pour les opérations complexes
-[X] **Headers spécifiques** : Gestion des fichiers JSON avec cache désactivé
+### 🤔 **Hypothèses**
+1. **Problème d'ordre des routes** : Routes spécifiques vs générales
+2. **Erreur dans la logique serverless** : Gestion mémoire/fichier
+3. **Timeout Lambda** : Opérations trop longues
+4. **Problème de parsing des paramètres** : parseInt() ou req.body
+5. **Erreur de gestion d'erreurs** : Exception non catchée
 
-[X] **Amélioration de l'interface admin**
-[X] **Section diagnostic** : Outils de test intégrés dans l'interface
-[X] **Bouton "Diagnostic API"** : Test immédiat des endpoints
-[X] **Bouton "Recharger données"** : Rechargement forcé avec diagnostic
-[X] **Messages d'erreur détaillés** : Affichage des erreurs techniques
+## Corrections à tenter ✅
 
-## Prochaines étapes 🎯
-1. **Attendre le redéploiement Vercel** (2-3 minutes)
-2. **Tester la route `/api/status`** pour vérifier la mise à jour
-3. **Tester l'ajout de plats** depuis l'interface admin
-4. **Valider la persistance** des données pendant la session
-5. **Documenter les résultats** dans les lessons
+### 🔧 **Diagnostic approfondi**
+1. **Ajouter plus de logs** dans les routes problématiques
+2. **Tester chaque route individuellement** en production
+3. **Vérifier les paramètres reçus** (req.params, req.body)
+4. **Améliorer la gestion d'erreurs** avec détails
 
-## Lessons - Débogage cache Vercel ✅
-- **Redéploiement forcé** : Changer la version dans package.json force un nouveau build
-- **Cache agressif** : Vercel peut garder en cache les anciens déploiements
-- **Route API** : Vérifier que toutes les routes sont bien dans le code pushé
-- **PowerShell** : Utiliser `;` au lieu de `&&` pour chaîner les commandes
-- **Git status** : `working tree clean` ne garantit pas que tout est sur GitHub
-- **Diagnostic essentiel** : Routes de test indispensables pour déboguer la production
+### 🏗️ **Optimisations serverless**
+1. **Réduire les opérations** dans les routes complexes
+2. **Simplifier la logique** de réorganisation
+3. **Améliorer la gestion mémoire** pour Vercel
+4. **Optimiser les timeouts** Lambda
+
+## Configuration actuelle ✅
+- **vercel.json** : Routes API correctement configurées
+- **server.js** : Export module.exports = app présent
+- **package.json** : Dépendances Express/CORS stables
+- **Environnement** : NODE_ENV=production, maxDuration=30s
+
+## Lessons - Debugging Vercel en cours 🔄
+- **Local vs Production** : Comportements différents sur serverless
+- **Logs essentiels** : Console.log crucial pour debugger Vercel
+- **Routes spécifiques** : Ordre et logique critique pour Express
+- **Gestion d'erreurs** : Try/catch avec détails pour production
+- **Tests API** : Nécessaires pour valider chaque endpoint
