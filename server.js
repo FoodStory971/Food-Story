@@ -22,7 +22,16 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.static(__dirname)); // Sert tous les fichiers statiques
+// Configuration des fichiers statiques pour Vercel
+app.use(express.static(__dirname, {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+    }
+}));
 
 /**
  * Lit les données des menus depuis le fichier JSON
@@ -836,4 +845,7 @@ app.listen(PORT, () => {
     console.log(`🚀 Serveur FoodStory démarré sur http://localhost:${PORT}`);
     console.log(`📋 Page principale: http://localhost:${PORT}`);
     console.log(`🛠️ Administration: http://localhost:${PORT}/admin.html`);
-}); 
+});
+
+// Export pour Vercel
+module.exports = app; 
