@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodStory - Plats à emporter</title>
+    
+    <!-- CSS modulaire -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+    <!-- Bannière téléphone -->
+    <div class="phone-banner" id="phoneBanner">
+        <div id="statusText">📞 Chargement...</div>
+        <div class="phone-number" id="phoneNumber">01 23 45 67 89</div>
+    </div>
+
+    <!-- Header principal -->
+    <header class="main-header">
+        <div class="logo-container">
+            <img src="logo.png" alt="FoodStory Logo" class="logo-bubble">
+        </div>
+        <p class="subtitle">L'aventure culinaire commence ici !</p>
+        <div class="horaires-pilules">
+            <div class="horaire-ligne-principale">
+                <span class="horaire-pilule">🕐 Horaires d'ouverture</span>
+            </div>
+            <div class="horaire-ligne-details">
+                <span class="horaire-pilule">Dimanche - Jeudi</span>
+                <span class="horaire-pilule">12h - 14h30</span>
+                <span class="horaire-pilule">18h - 21h</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Container principal -->
+    <div class="container">
+        <!-- Conteneur pour les messages -->
+        <div id="message-container"></div>
+
+        <!-- Menu de la semaine actuelle -->
+        <section class="menu-section current">
+            <div class="menu-header current">
+                <h2 id="titre-actuel">Menu de cette semaine</h2>
+                <div class="periode-pilules" id="periode-pilules-actuel">
+                    <!-- Pilules générées dynamiquement -->
+                </div>
+            </div>
+            <div class="menu-content">
+                <div class="menu-grid" id="plats-actuels">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+                
+                <!-- Section accompagnements discrète -->
+                <div id="accompagnements-container" class="accompagnements-container-discrete">
+                    <!-- Accompagnements chargés dynamiquement -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu de la semaine prochaine -->
+        <section class="menu-section previous">
+            <div class="menu-header">
+                <h2 id="titre-a-venir">Aperçu semaine prochaine</h2>
+                <div class="periode-pilules" id="periode-pilules-a-venir">
+                    <!-- Pilules générées dynamiquement -->
+                </div>
+            </div>
+            <div class="menu-content">
+                <div class="menu-grid" id="plats-a-venir">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <h3>🎬 FoodStory - L'aventure continue ! 🎬</h3>
+        <p><br>🕒 Du dimanche au jeudi : 12h - 14h30 & 18h - 21h<br></p>
+    </footer>
+
+    <!-- Scripts modulaires -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html> 

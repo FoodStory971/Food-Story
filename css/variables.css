@@ -1,0 +1,104 @@
+/**
+ * Variables CSS centralisées pour FoodStory
+ * Thème Toy Story avec couleurs rouge/jaune
+ */
+
+:root {
+    /* Couleurs principales */
+    --color-primary-red: #DC143C;
+    --color-primary-red-dark: #B22222;
+    --color-primary-yellow: #FFD700;
+    --color-primary-orange: #FFA500;
+    --color-accent-tomato: #FF6347;
+    
+    /* Couleurs de fond */
+    --bg-gradient-main: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6347 100%);
+    --bg-gradient-red: linear-gradient(45deg, #DC143C, #B22222);
+    --bg-gradient-yellow: linear-gradient(45deg, #FFD700, #FFA500);
+    --bg-gradient-menu-item: linear-gradient(135deg, #FFF8DC, #FFFACD);
+    --bg-gradient-menu-preview: linear-gradient(135deg, #F5F5F5, #E8E8E8);
+    
+    /* Couleurs de texte */
+    --text-primary: #333;
+    --text-secondary: #666;
+    --text-light: #999;
+    --text-white: white;
+    
+    /* Couleurs d'état */
+    --color-success: #28a745;
+    --color-success-light: #20c997;
+    --color-warning: #ffc107;
+    --color-warning-light: #fd7e14;
+    --color-danger: #dc3545;
+    --color-danger-dark: #c82333;
+    --color-error: #FF4444;
+    
+    /* Couleurs de statut */
+    --color-open: #90EE90;
+    --color-closed: #FFB6C1;
+    
+    /* Typographie */
+    --font-family-main: 'Comic Sans MS', cursive, sans-serif;
+    --font-size-xs: 0.9rem;
+    --font-size-sm: 1rem;
+    --font-size-base: 1.1rem;
+    --font-size-lg: 1.2rem;
+    --font-size-xl: 1.3rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.8rem;
+    --font-size-4xl: 2rem;
+    --font-size-5xl: 2.5rem;
+    --font-size-6xl: 3rem;
+    --font-size-7xl: 4rem;
+    
+    /* Espacements */
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 25px;
+    --spacing-2xl: 30px;
+    --spacing-3xl: 40px;
+    
+    /* Bordures et rayons */
+    --border-radius-sm: 10px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 15px;
+    --border-radius-xl: 20px;
+    --border-radius-2xl: 25px;
+    --border-radius-full: 50%;
+    
+    /* Largeurs de bordure */
+    --border-width-thin: 2px;
+    --border-width-medium: 3px;
+    --border-width-thick: 4px;
+    --border-width-extra: 6px;
+    
+    /* Ombres */
+    --shadow-sm: 0 4px 8px rgba(0,0,0,0.2);
+    --shadow-md: 0 6px 12px rgba(0,0,0,0.2);
+    --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+    --shadow-text: 2px 2px 4px rgba(0,0,0,0.3);
+    --shadow-text-lg: 3px 3px 6px rgba(0,0,0,0.3);
+    --shadow-phone: 2px 2px 4px rgba(0,0,0,0.5);
+    
+    /* Transitions */
+    --transition-fast: 0.3s ease;
+    --transition-medium: 0.5s ease;
+    --transition-slow: 1s ease;
+    
+    /* Z-index */
+    --z-index-modal: 1000;
+    --z-index-banner: 100;
+    --z-index-dropdown: 50;
+    
+    /* Largeurs maximales */
+    --max-width-container: 1200px;
+    --max-width-admin: 1400px;
+    --max-width-modal: 600px;
+    
+    /* Breakpoints pour responsive */
+    --breakpoint-mobile: 480px;
+    --breakpoint-tablet: 768px;
+    --breakpoint-desktop: 1024px;
+} 

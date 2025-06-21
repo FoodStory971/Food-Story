@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodStory - Administration</title>
+    
+    <!-- CSS modulaire -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+    <a href="index.html" class="back-link">← Retour au site</a>
+
+    <div class="container admin">
+        <div class="admin-header">
+            <h1>🛠️ Administration FoodStory</h1>
+            <p class="subtitle">Gestion des menus et contenus</p>
+        </div>
+
+        <div id="message-container"></div>
+
+        <!-- Aperçu discret des accompagnements actifs -->
+        <div class="admin-menu-section accompagnements-apercu">
+            <div class="admin-menu-header">
+                <h2>🥗 Accompagnements</h2>
+            </div>
+            <div id="accompagnements-apercu" class="accompagnements-apercu-content">
+                <!-- Contenu chargé dynamiquement -->
+            </div>
+        </div>
+
+        <div class="menus-container">
+            <!-- Menu actuel -->
+            <div class="admin-menu-section current">
+                <div class="admin-menu-header">
+                    <h2>📋 Menu actuel</h2>
+                </div>
+                <div class="admin-grid" id="menu-actif">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+                <div class="add-btn" onclick="ouvrirModal('actif')">
+                    ➕ Ajouter un plat
+                </div>
+            </div>
+
+            <!-- Menu à venir -->
+            <div class="admin-menu-section preview">
+                <div class="admin-menu-header">
+                    <h2>🔮 Menu à venir</h2>
+                </div>
+                <div class="admin-grid" id="menu-a-venir">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+                <div class="add-btn" onclick="ouvrirModal('a_venir')">
+                    ➕ Ajouter un plat
+                </div>
+            </div>
+
+            <!-- Section Archives -->
+            <div class="admin-menu-section archives">
+                <div class="admin-menu-header">
+                    <h2>📁 Archives</h2>
+                </div>
+                <div class="admin-grid" id="menu-archives">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+                <div class="add-btn" onclick="ouvrirModal('archives')">
+                    ➕ Ajouter un plat
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter/modifier un plat -->
+    <div id="modal-plat" class="modal">
+        <div class="modal-content">
+            <span class="close" id="btn-fermer-modal">&times;</span>
+            <h2 id="modal-titre">Ajouter un plat</h2>
+            
+            <form id="form-plat">
+                <input type="hidden" id="categorie" name="categorie">
+                <input type="hidden" id="platId" name="platId">
+                
+                <div class="form-group">
+                    <label for="emoji">Emoji du plat</label>
+                    <input type="text" id="emoji" name="emoji" placeholder="🍽️" maxlength="2">
+                    <div id="emoji-suggestions" class="emoji-suggestions" style="display: none;"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nom">Nom du plat *</label>
+                        <input type="text" id="nom" name="nom" required placeholder="Ex: Fricassé de Chatrou">
+                    </div>
+                    <div class="form-group">
+                        <label for="prix">Prix *</label>
+                        <input type="text" id="prix" name="prix" required placeholder="Ex: 12,50">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description :</label>
+                    <textarea id="description" name="description" placeholder="Description appétissante du plat..." required></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-success" id="btn-submit">Ajouter le plat</button>
+                    <button type="button" class="btn btn-secondary" id="btn-annuler">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter/modifier un accompagnement -->
+    <div id="modal-accompagnement" class="modal">
+        <div class="modal-content">
+            <span class="close" id="btn-fermer-modal-accompagnement">&times;</span>
+            <h2 id="modal-accompagnement-titre">Ajouter un accompagnement</h2>
+            
+            <form id="form-accompagnement">
+                <input type="hidden" id="accompagnement-id" name="accompagnementId">
+                
+                <div class="form-group">
+                    <label for="accompagnement-emoji">Emoji de l'accompagnement</label>
+                    <input type="text" id="accompagnement-emoji" name="emoji" placeholder="🥔" maxlength="2" required>
+                    <div id="accompagnement-emoji-suggestions" class="emoji-suggestions" style="display: none;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accompagnement-nom">Nom de l'accompagnement *</label>
+                    <input type="text" id="accompagnement-nom" name="nom" required placeholder="Ex: Pommes de terre">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-success" id="btn-submit-accompagnement">Ajouter l'accompagnement</button>
+                    <button type="button" class="btn btn-secondary" id="btn-annuler-accompagnement">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts modulaires -->
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html> 
