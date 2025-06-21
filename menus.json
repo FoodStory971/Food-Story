@@ -5,20 +5,12 @@
       "periode": "Du dimanche 15 au jeudi 19 juin",
       "plats": [
         {
-          "id": 13,
-          "nom": "Blanquette de Veau",
-          "emoji": "🥛",
-          "description": "Veau tendre en sauce blanche crémeuse, carottes et champignons de Paris",
-          "prix": "18,90 €",
-          "ordre": 1
-        },
-        {
           "id": 2,
           "nom": "Poulet Jerk",
           "emoji": "🔥",
           "description": "Poulet mariné aux épices jamaïcaines, grillé à la perfection avec notre mélange secret",
           "prix": "15,90 €",
-          "ordre": 2
+          "ordre": 1
         },
         {
           "nom": "Fricassé de Chatrou",
@@ -26,7 +18,7 @@
           "description": "Poulpe mijoté aux épices créoles, tomates et oignons, recette traditionnelle antillaise",
           "prix": "16,50 €",
           "id": 1,
-          "ordre": 3
+          "ordre": 2
         },
         {
           "nom": "Boulets Liégeois",
@@ -34,6 +26,14 @@
           "description": "Boulettes de viande belges traditionnelles, sauce lapin et frites maison",
           "prix": "14,80 €",
           "id": 28,
+          "ordre": 3
+        },
+        {
+          "id": 13,
+          "nom": "Blanquette de Veau",
+          "emoji": "🥛",
+          "description": "Veau tendre en sauce blanche crémeuse, carottes et champignons de Paris",
+          "prix": "18,90 €",
           "ordre": 4
         }
       ]
@@ -96,20 +96,12 @@
           "ordre": 2
         },
         {
-          "id": 11,
-          "nom": "Coq au Vin",
-          "emoji": "🐓",
-          "description": "Coq fermier braisé au vin blanc, sauce crémeuse aux champignons et fines herbes",
-          "prix": "17,80 €",
-          "ordre": 3
-        },
-        {
           "id": 12,
           "nom": "Rougail Saucisse",
           "emoji": "🌶️",
           "description": "Saucisses créoles mijotées dans une sauce tomate épicée aux piments et oignons",
           "prix": "14,90 €",
-          "ordre": 4
+          "ordre": 3
         },
         {
           "id": 14,
@@ -117,7 +109,7 @@
           "emoji": "🐚",
           "description": "Lambi (conque) mijoté dans une sauce créole aux tomates, piments doux et thym",
           "prix": "20,50 €",
-          "ordre": 5
+          "ordre": 4
         },
         {
           "id": 15,
@@ -125,7 +117,7 @@
           "emoji": "🦴",
           "description": "Jarret de veau braisé à la tomate, vin blanc et gremolata, spécialité italienne",
           "prix": "21,90 €",
-          "ordre": 6
+          "ordre": 5
         },
         {
           "id": 16,
@@ -133,7 +125,7 @@
           "emoji": "🍗",
           "description": "Poulet fermier au cari créole, lait de coco, curcuma et légumes pays traditionnels",
           "prix": "15,50 €",
-          "ordre": 7
+          "ordre": 6
         },
         {
           "id": 17,
@@ -141,7 +133,7 @@
           "emoji": "🌿",
           "description": "Bœuf mijoté aux herbes de Provence, olives noires et tomates confites",
           "prix": "17,20 €",
-          "ordre": 8
+          "ordre": 7
         },
         {
           "id": 18,
@@ -149,7 +141,7 @@
           "emoji": "🏺",
           "description": "Agneau aux pruneaux et amandes, mijoté dans un tajine traditionnel avec épices orientales",
           "prix": "19,80 €",
-          "ordre": 9
+          "ordre": 8
         },
         {
           "id": 19,
@@ -157,7 +149,7 @@
           "emoji": "🐟",
           "description": "Poisson blanc au massalé créole, lait de coco et légumes pays parfumés",
           "prix": "18,30 €",
-          "ordre": 10
+          "ordre": 9
         },
         {
           "id": 20,
@@ -165,7 +157,7 @@
           "emoji": "🐰",
           "description": "Lapin fermier mijoté au vin rouge, champignons sauvages et lardons fumés",
           "prix": "20,90 €",
-          "ordre": 11
+          "ordre": 10
         },
         {
           "id": 22,
@@ -173,7 +165,7 @@
           "emoji": "🥩",
           "description": "Émincé de bœuf à la crème fraîche, champignons et paprika, recette russe authentique",
           "prix": "18,60 €",
-          "ordre": 12
+          "ordre": 11
         },
         {
           "id": 27,
@@ -181,7 +173,7 @@
           "emoji": "🫘",
           "description": "Haricots blancs mijotés avec confit de canard, saucisse et lard, tradition du Sud-Ouest",
           "prix": "20,30 €",
-          "ordre": 13
+          "ordre": 12
         },
         {
           "id": 3,
@@ -189,6 +181,14 @@
           "emoji": "🍖",
           "description": "Gigot d'agneau rôti aux herbes de Provence, tendre et savoureux",
           "prix": "18,20 €",
+          "ordre": 13
+        },
+        {
+          "id": 11,
+          "nom": "Coq au Vin",
+          "emoji": "🐓",
+          "description": "Coq fermier braisé au vin blanc, sauce crémeuse aux champignons et fines herbes",
+          "prix": "17,80 €",
           "ordre": 14
         }
       ]
