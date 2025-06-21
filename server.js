@@ -23,18 +23,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Middleware de validation pour les routes de plats
-app.use('/api/plats/:id/*', (req, res, next) => {
-    const platId = parseInt(req.params.id);
-    if (isNaN(platId) || platId <= 0) {
-        console.error(`❌ [VALIDATION] ID de plat invalide: ${req.params.id}`);
-        return res.status(400).json({
-            success: false,
-            message: 'ID de plat invalide'
-        });
-    }
-    next();
-});
+
 
 // Configuration des fichiers statiques pour Vercel
 app.use(express.static(__dirname, {
@@ -475,6 +464,15 @@ app.post('/api/plats/:id/monter', async (req, res) => {
         const donnees = await lireDonneesMenus();
         console.log(`🔼 [MONTER] Données chargées, plats dans ${categorie}:`, donnees.menus[categorie]?.plats?.length || 0);
         
+        // Vérifier que la catégorie et les plats existent
+        if (!donnees.menus || !donnees.menus[categorie] || !donnees.menus[categorie].plats) {
+            console.log(`🔼 [MONTER] Erreur: Catégorie ou plats inexistants`);
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Catégorie ou tableau de plats inexistant' 
+            });
+        }
+        
         // Trier les plats par ordre avant manipulation
         donnees.menus[categorie].plats.sort((a, b) => (a.ordre || 999) - (b.ordre || 999));
         console.log(`🔼 [MONTER] Plats triés`);
@@ -560,6 +558,15 @@ app.post('/api/plats/:id/descendre', async (req, res) => {
         const donnees = await lireDonneesMenus();
         console.log(`🔽 [DESCENDRE] Données chargées, plats dans ${categorie}:`, donnees.menus[categorie]?.plats?.length || 0);
         
+        // Vérifier que la catégorie et les plats existent
+        if (!donnees.menus || !donnees.menus[categorie] || !donnees.menus[categorie].plats) {
+            console.log(`🔽 [DESCENDRE] Erreur: Catégorie ou plats inexistants`);
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Catégorie ou tableau de plats inexistant' 
+            });
+        }
+        
         // Trier les plats par ordre avant manipulation
         donnees.menus[categorie].plats.sort((a, b) => (a.ordre || 999) - (b.ordre || 999));
         
@@ -604,10 +611,11 @@ app.post('/api/plats/:id/descendre', async (req, res) => {
             res.status(500).json({ error: 'Erreur lors du déplacement du plat' });
         }
     } catch (error) {
-        console.error('Erreur lors du déplacement du plat:', error);
+        console.error('🔽 [DESCENDRE] Erreur catch:', error);
         res.status(500).json({ 
             success: false, 
-            message: 'Erreur serveur lors du déplacement' 
+            message: 'Erreur serveur lors du déplacement',
+            details: error.message
         });
     }
 });
@@ -638,11 +646,24 @@ app.post('/api/plats/:id/basculer', async (req, res) => {
         
         console.log(`🔄 [BASCULER] Basculement: ${categorieSource} → ${categorieDestination} pour le plat ${platId}`);
         
+        // Vérifier que les catégories existent
+        if (!donnees.menus || !donnees.menus[categorieSource] || !donnees.menus[categorieDestination]) {
+            console.log(`🔄 [BASCULER] Erreur: Catégorie inexistante`);
+            return res.status(400).json({ error: 'Catégorie source ou destination inexistante' });
+        }
+        
+        // Vérifier que les plats existent
+        if (!donnees.menus[categorieSource].plats || !donnees.menus[categorieDestination].plats) {
+            console.log(`🔄 [BASCULER] Erreur: Tableau de plats inexistant`);
+            return res.status(400).json({ error: 'Tableau de plats inexistant' });
+        }
+        
         // Trouver le plat dans la catégorie source
         const platIndex = donnees.menus[categorieSource].plats.findIndex(p => p.id === platId);
+        console.log(`🔄 [BASCULER] Index du plat trouvé: ${platIndex}`);
         
         if (platIndex === -1) {
-            console.log(`Plat ${platId} non trouvé dans ${categorieSource}`);
+            console.log(`🔄 [BASCULER] Plat ${platId} non trouvé dans ${categorieSource}`);
             return res.status(404).json({ error: 'Plat non trouvé' });
         }
         
@@ -684,8 +705,12 @@ app.post('/api/plats/:id/basculer', async (req, res) => {
             res.status(500).json({ error: 'Erreur lors du basculement du plat' });
         }
     } catch (error) {
-        console.error('Erreur POST /api/plats/:id/basculer:', error);
-        res.status(500).json({ error: 'Erreur lors du basculement du plat' });
+        console.error('🔄 [BASCULER] Erreur catch:', error);
+        res.status(500).json({ 
+            error: 'Erreur lors du basculement du plat',
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 

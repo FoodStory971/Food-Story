@@ -981,33 +981,35 @@ Les routes API fonctionnent en local mais retournent des erreurs 500 en producti
 [X] Analyser les logs d'erreur du frontend 
 [X] Vérifier la configuration serveur et Vercel
 [X] Tester le serveur en local (fonctionne parfaitement)
-[ ] Identifier la cause spécifique sur Vercel
-[ ] Corriger le problème de compatibilité serverless
+[X] Ajouter logs détaillés dans les routes problématiques
+[X] Pousser les modifications sur GitHub (commit e40eb36)
+[X] Vérifier les logs dans la console DevTools
+[ ] Analyser les logs Vercel pour identifier l'erreur exacte
+[ ] Corriger le problème identifié
 [ ] Tester les modifications en production
 [ ] Valider le fonctionnement complet
 
-## Problème identifié ❌
+## Problème confirmé ❌
 
-### 🐛 **Erreurs API en production Vercel**
-- **Routes affectées** : `/api/plats/:id/basculer`, `/api/plats/:id/monter`, `/api/plats/:id/descendre`
-- **Erreur** : HTTP 500 "Failed to load resource"
+### 🐛 **Erreurs API en production Vercel - CONFIRMÉES**
+- **Routes affectées** : `/api/plats/:id/basculer`, `/api/plats/:id/descendre` 
+- **Erreur** : HTTP 500 "Internal Server Error"
 - **Symptômes** : Boutons d'action non fonctionnels en production
 - **Local** : Fonctionne parfaitement (serveur démarre, API répond)
-- **Production** : Erreurs 500 sur routes spécifiques
+- **Production** : Erreurs 500 sur routes spécifiques avec logs détaillés
 
-### 🔍 **Analyse technique**
-- **Serveur local** : ✅ Fonctionne (port 3000)
-- **Route `/api/status`** : ✅ Répond correctement 
-- **Route `/api/menus`** : ✅ Lit les données
-- **Route `/api/plats`** : ✅ Ajoute des plats
-- **Routes spécifiques** : ❌ Erreur 500 en production
+### 🔍 **Logs observés dans DevTools**
+- **Authentification admin** : ✅ Fonctionne ("Modal auth trouvé: true")
+- **Chargement données** : ✅ Fonctionne ("Données chargées avec succès depuis 1 API")
+- **Interface admin** : ✅ Initialisée avec succès
+- **Routes basculer/descendre** : ❌ Erreur 500 (Internal Server Error)
 
-### 🤔 **Hypothèses**
-1. **Problème d'ordre des routes** : Routes spécifiques vs générales
-2. **Erreur dans la logique serverless** : Gestion mémoire/fichier
-3. **Timeout Lambda** : Opérations trop longues
-4. **Problème de parsing des paramètres** : parseInt() ou req.body
-5. **Erreur de gestion d'erreurs** : Exception non catchée
+### 🤔 **Hypothèses actualisées**
+1. **Erreur dans la logique des routes** : Exception non catchée dans le code
+2. **Problème avec parseInt()** : Parsing des paramètres sur Vercel
+3. **Problème de structure de données** : Accès à des propriétés undefined
+4. **Timeout Lambda** : Opérations trop longues pour l'environnement serverless
+5. **Middleware de validation** : Conflit avec les routes spécifiques
 
 ## Corrections à tenter ✅
 
