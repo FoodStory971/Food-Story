@@ -835,9 +835,13 @@ app.delete('/api/accompagnements/:id', async (req, res) => {
 
 // === ROUTES POUR LES PLATS (spécifiques avant génériques) ===
 
-// Route par défaut pour servir index.html
+// Routes pour servir les fichiers HTML
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
 // Démarrage du serveur
