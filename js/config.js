@@ -15,7 +15,7 @@ export const HORAIRES_CONFIG = {
     CRENEAUX: {
         MIDI: {
             DEBUT: 12 * 60, // 12h00 en minutes
-            FIN: 14 * 60 + 30 // 14h30 en minutes
+            FIN: 14 * 60, // 14h30 en minutes
         },
         SOIR: {
             DEBUT: 18 * 60, // 18h00 en minutes
