@@ -1,6 +1,6 @@
 {
   "name": "foodstory",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Application de gestion de menus pour restaurant",
   "main": "server.js",
   "scripts": {
