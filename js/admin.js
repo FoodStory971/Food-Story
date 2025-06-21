@@ -18,22 +18,6 @@ const MOT_DE_PASSE_ADMIN = 'Lucien971';
 
 // Initialisation de l'authentification
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM chargé, initialisation authentification...');
-    
-    // Forcer l'affichage du modal d'authentification
-    const modalAuth = document.getElementById('modal-authentification');
-    const contenuAdmin = document.getElementById('contenu-admin');
-    
-    if (modalAuth && contenuAdmin) {
-        // S'assurer que le modal est visible et le contenu masqué
-        modalAuth.style.display = 'flex';
-        modalAuth.classList.remove('hidden');
-        contenuAdmin.style.display = 'none';
-        contenuAdmin.classList.remove('authenticated');
-        
-        console.log('Modal d\'authentification affiché');
-    }
-    
     configurerAuthentification();
 });
 
@@ -236,32 +220,13 @@ function afficherMessage(message, type = 'info') {
 // === FONCTIONS GLOBALES POUR LES PLATS ===
 
 /**
- * Vérifie si l'utilisateur est authentifié
- * @returns {boolean} État d'authentification
- */
-function verifierAuthentification() {
-    if (!isAuthenticated) {
-        console.error('Tentative d\'accès non authentifié');
-        afficherMessage('Vous devez être authentifié pour effectuer cette action', 'error');
-        return false;
-    }
-    return true;
-}
-
-/**
  * Ouvre le modal pour ajouter un plat
  * @param {string} categorie - Catégorie du menu
  */
 window.ouvrirModal = function(categorie) {
-    if (!verifierAuthentification()) return;
-    
-    try {
-        adminRenderer.ouvrirModalAjout(categorie);
-        modalEnhancements.configurerSuggestionsEmojis('emoji', 'emoji-suggestions', 'plats');
-    } catch (error) {
-        console.error('Erreur lors de l\'ouverture du modal:', error);
-        afficherMessage('Erreur lors de l\'ouverture du modal d\'ajout', 'error');
-    }
+    adminRenderer.ouvrirModalAjout(categorie);
+    modalEnhancements.configurerSuggestionsEmojis('emoji', 'emoji-suggestions');
+    modalEnhancements.configurerFormatagePrix('prix');
 };
 
 /**
@@ -270,8 +235,6 @@ window.ouvrirModal = function(categorie) {
  * @param {string} categorie - Catégorie du plat
  */
 window.modifierPlat = async function(id, categorie) {
-    if (!verifierAuthentification()) return;
-    
     try {
         const resultat = dataService.trouverPlat(id);
         if (!resultat) {
@@ -280,7 +243,8 @@ window.modifierPlat = async function(id, categorie) {
         }
 
         adminRenderer.ouvrirModalModification(resultat.plat, resultat.categorie);
-        modalEnhancements.configurerSuggestionsEmojis('emoji', 'emoji-suggestions', 'plats');
+        modalEnhancements.configurerSuggestionsEmojis('emoji', 'emoji-suggestions');
+        modalEnhancements.configurerFormatagePrix('prix');
     } catch (error) {
         console.error('Erreur lors de la modification du plat:', error);
         afficherMessage('Erreur lors de la modification du plat', 'error');
@@ -428,8 +392,6 @@ window.descendrePlat = async function(id, categorie) {
  * Ouvre le modal pour ajouter un accompagnement
  */
 window.ouvrirModalAccompagnement = function() {
-    if (!verifierAuthentification()) return;
-    
     adminRenderer.ouvrirModalAccompagnementAjout();
     modalEnhancements.configurerSuggestionsEmojis('accompagnement-emoji', 'accompagnement-emoji-suggestions', 'accompagnements');
 };
@@ -516,29 +478,15 @@ window.supprimerAccompagnement = async function(id) {
  */
 async function ajouterNouveauPlat(donnees) {
     try {
-        // Validation des données
-        if (!donnees.nom || !donnees.prix || !donnees.categorie) {
-            afficherMessage('Veuillez remplir tous les champs obligatoires', 'error');
-            return false;
-        }
-
-        // Nettoyage et validation du prix
-        let prix = donnees.prix.toString().trim();
-        if (!prix.includes('€')) {
-            prix = prix + ' €';
-        }
-
         const plat = {
-            nom: donnees.nom.trim(),
-            emoji: donnees.emoji || '🍽️',
-            description: donnees.description ? donnees.description.trim() : '',
-            prix: prix
+            nom: donnees.nom,
+            emoji: donnees.emoji,
+            description: donnees.description,
+            prix: donnees.prix
         };
 
-        console.log('Ajout du plat:', plat, 'dans la catégorie:', donnees.categorie);
-
-        const platAjoute = await dataService.ajouterPlat(donnees.categorie, plat);
-        if (platAjoute) {
+        const succes = await dataService.ajouterPlat(donnees.categorie, plat);
+        if (succes) {
             afficherMessage('Plat ajouté avec succès', 'success');
             return true;
         } else {
@@ -547,7 +495,7 @@ async function ajouterNouveauPlat(donnees) {
         }
     } catch (error) {
         console.error('Erreur lors de l\'ajout:', error);
-        afficherMessage(`Erreur lors de l'ajout du plat: ${error.message}`, 'error');
+        afficherMessage('Erreur lors de l\'ajout du plat', 'error');
         return false;
     }
 }
