@@ -46,6 +46,10 @@
         <div class="admin-header">
             <h1>🛠️ Administration FoodStory</h1>
             <p class="subtitle">Gestion des menus et contenus</p>
+            <div style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">
+                Version: <span id="version-app">Chargement...</span> | 
+                Déployé: <span id="timestamp-deploy"></span>
+            </div>
         </div>
 
         <!-- Boutons de diagnostic -->
@@ -184,5 +188,30 @@
 
     <!-- Scripts modulaires -->
     <script type="module" src="js/admin.js"></script>
+    <script>
+        // Afficher le timestamp de déploiement et récupérer la version
+        document.addEventListener('DOMContentLoaded', function() {
+            const timestampElement = document.getElementById('timestamp-deploy');
+            const versionElement = document.getElementById('version-app');
+            
+            if (timestampElement) {
+                timestampElement.textContent = new Date().toLocaleString('fr-FR');
+            }
+            
+            // Récupérer la version depuis l'API
+            if (versionElement) {
+                fetch('/api/status')
+                    .then(response => response.json())
+                    .then(data => {
+                        versionElement.textContent = data.version || 'Inconnue';
+                        versionElement.style.color = data.architecture === 'refactored-for-vercel' ? '#28a745' : '#dc3545';
+                    })
+                    .catch(error => {
+                        versionElement.textContent = 'Erreur';
+                        versionElement.style.color = '#dc3545';
+                    });
+            }
+        });
+    </script>
 </body>
 </html> 

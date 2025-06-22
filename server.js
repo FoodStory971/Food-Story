@@ -8,6 +8,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs').promises;
 const path = require('path');
+const packageJson = require('./package.json');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -219,12 +220,14 @@ app.get('/api/status', async (req, res) => {
         
         res.json({
             status: 'OK',
+            version: packageJson.version,
             environment: process.env.NODE_ENV || 'development',
             timestamp: new Date().toISOString(),
             memoryDataExists: donneesExistent,
             fileExists: fichierExiste,
-            platform: process.platform,
-            nodeVersion: process.version
+            platform: 'vercel-serverless',
+            nodeVersion: process.version,
+            architecture: 'refactored-for-vercel'
         });
     } catch (error) {
         res.status(500).json({
